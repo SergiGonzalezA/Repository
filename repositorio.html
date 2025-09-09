@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repositorio de Recursos Académicos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .header {
+            background-color: #004d99;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1.5rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .search-bar {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 1rem;
+        }
+        .search-bar input[type="text"] {
+            flex-grow: 1;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .search-bar button {
+            padding: 0.75rem 1.5rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .sidebar {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .sidebar h3 {
+            margin-top: 0;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar li {
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+        }
+        .sidebar li:hover {
+            text-decoration: underline;
+        }
+        .results {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .resource-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .resource-card h4 {
+            margin-top: 0;
+            color: #004d99;
+        }
+        .download-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            padding: 0.5rem 1rem;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h1>Repositorio Universitario</h1>
+        <nav class="nav">
+            <a href="#">Inicio</a>
+            <a href="#">Subir Recurso</a>
+            <a href="#">Mi Cuenta</a>
+            <a href="#">Ayuda</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Buscar recursos (ej. 'inteligencia artificial', 'tesis de grado')...">
+            <button id="search-button">Buscar</button>
+        </div>
+
+        <div class="content">
+            <aside class="sidebar">
+                <h3>Filtros</h3>
+                <p><strong>Tipo de Recurso</strong></p>
+                <ul id="filter-type"></ul>
+                <hr>
+                <p><strong>Disciplina</strong></p>
+                <ul id="filter-discipline"></ul>
+            </aside>
+            <main class="results">
+                <h3>Resultados de Búsqueda</h3>
+                </main>
+        </div>
+    </div>
+
+    <script>
+        const datosJSON = {
+          "recursos": [
+            {
+              "tipo_de_recurso": "Artículo de Investigación",
+              "disciplina": "Ingeniería de Sistemas",
+              "autor": "Dr. Juan Pérez",
+              "resumen": "Análisis y optimización de algoritmos de inteligencia artificial para la gestión de bases de datos no relacionales.",
+              "url_archivo": "https://drive.google.com/file/d/1op6KoovJtVPX3q67UHlZo2SnS9I4bOEU/view?usp=drive_link"
+            },
+            {
+              "tipo_de_recurso": "Tesis de Grado",
+              "disciplina": "Ciencias de la Computación",
+              "autor": "Ana Gómez",
+              "resumen": "Diseño e implementación de un sistema de recomendación basado en aprendizaje automático para plataformas de e-learning.",
+              "url_archivo": "https://drive.google.com/file/d/1op6KoovJtVPX3q67UHlZo2SnS9I4bOEU/view?usp=drive_link"
+            },
+            {
+              "tipo_de_recurso": "Presentación",
+              "disciplina": "Biología",
+              "autor": "Dra. Laura Torres",
+              "resumen": "Impacto del cambio climático en los ecosistemas marinos del Caribe. Presentación utilizada en el curso de Biología Marina.",
+              "url_archivo": "https://drive.google.com/file/d/1op6KoovJtVPX3q67UHlZo2SnS9I4bOEU/view?usp=drive_link"
+            },
+            {
+              "tipo_de_recurso": "Video Tutorial",
+              "disciplina": "Matemáticas",
+              "autor": "Prof. Carlos López",
+              "resumen": "Video explicativo sobre la resolución de ecuaciones diferenciales ordinarias. Incluye ejemplos prácticos y ejercicios.",
+              "url_archivo": "https://drive.google.com/file/d/1op6KoovJtVPX3q67UHlZo2SnS9I4bOEU/view?usp=drive_link"
+            },
+            {
+              "tipo_de_recurso": "Artículo de Investigación",
+              "disciplina": "Medicina",
+              "autor": "Dr. Luis García",
+              "resumen": "Estudio clínico sobre la eficacia de un nuevo fármaco para el tratamiento de la hipertensión. Incluye metodología, resultados y conclusiones.",
+              "url_archivo": "https://drive.google.com/file/d/1op6KoovJtVPX3q67UHlZo2SnS9I4bOEU/view?usp=drive_link"
+            },
+            {
+              "tipo_de_recurso": "Presentación",
+              "disciplina": "Ingeniería de Sistemas",
+              "autor": "Prof. Roberto Daza",
+              "resumen": "Conceptos de la robótica educativa para la enseñanza de la programación en escuelas.",
+              "url_archivo": "https://drive.google.com/file/d/1op6KoovJtVPX3q67UHlZo2SnS9I4bOEU/view?usp=drive_link"
+            }
+          ]
+        };
+
+        const todosLosRecursos = datosJSON.recursos;
+        const resultadosDiv = document.querySelector('.results');
+        const filtroTipoUL = document.getElementById('filter-type');
+        const filtroDisciplinaUL = document.getElementById('filter-discipline');
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
+
+        // Función para renderizar los recursos en el HTML
+        function renderizarRecursos(recursos) {
+            resultadosDiv.innerHTML = '<h3>Resultados de Búsqueda</h3>'; // Limpiar resultados
+            if (recursos.length === 0) {
+                resultadosDiv.innerHTML += '<p>No se encontraron recursos que coincidan con la búsqueda.</p>';
+                return;
+            }
+            recursos.forEach(recurso => {
+                const card = document.createElement('div');
+                card.className = 'resource-card';
+                card.innerHTML = `
+                    <h4>${recurso.resumen}</h4>
+                    <p><strong>Autor:</strong> ${recurso.autor}</p>
+                    <p><strong>Tipo:</strong> ${recurso.tipo_de_recurso}</p>
+                    <p><strong>Disciplina:</strong> ${recurso.disciplina}</p>
+                    <a href="${recurso.url_archivo}" class="download-btn" target="_blank">Descargar</a>
+                `;
+                resultadosDiv.appendChild(card);
+            });
+        }
+
+        // Función para generar los filtros dinámicamente
+        function generarFiltros(recursos) {
+            // Generar filtros por Tipo de Recurso
+            const tiposUnicos = [...new Set(recursos.map(item => item.tipo_de_recurso))];
+            tiposUnicos.forEach(tipo => {
+                const li = document.createElement('li');
+                li.textContent = tipo;
+                li.addEventListener('click', () => {
+                    const recursosFiltrados = todosLosRecursos.filter(recurso => recurso.tipo_de_recurso === tipo);
+                    renderizarRecursos(recursosFiltrados);
+                });
+                filtroTipoUL.appendChild(li);
+            });
+
+            // Generar filtros por Disciplina
+            const disciplinasUnicas = [...new Set(recursos.map(item => item.disciplina))];
+            disciplinasUnicas.forEach(disciplina => {
+                const li = document.createElement('li');
+                li.textContent = disciplina;
+                li.addEventListener('click', () => {
+                    const recursosFiltrados = todosLosRecursos.filter(recurso => recurso.disciplina === disciplina);
+                    renderizarRecursos(recursosFiltrados);
+                });
+                filtroDisciplinaUL.appendChild(li);
+            });
+        }
+
+        // Función para manejar la búsqueda por texto
+        function manejarBusqueda() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const recursosFiltrados = todosLosRecursos.filter(recurso => {
+                return recurso.resumen.toLowerCase().includes(searchTerm) ||
+                       recurso.autor.toLowerCase().includes(searchTerm) ||
+                       recurso.tipo_de_recurso.toLowerCase().includes(searchTerm) ||
+                       recurso.disciplina.toLowerCase().includes(searchTerm);
+            });
+            renderizarRecursos(recursosFiltrados);
+        }
+
+        // Event listeners para la búsqueda
+        searchButton.addEventListener('click', manejarBusqueda);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                manejarBusqueda();
+            }
+        });
+
+        // Cargar y renderizar todo al inicio
+        document.addEventListener('DOMContentLoaded', () => {
+            generarFiltros(todosLosRecursos);
+            renderizarRecursos(todosLosRecursos);
+        });
+
+    </script>
+
+</body>
+</html>
