@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repositorio de Recursos Académicos</title>
+    <title>Repositorio de Libros Educativos</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -33,21 +33,24 @@
             margin: 2rem auto;
             padding: 0 1rem;
         }
-        .search-bar {
+        .search-bar, .upload-form-container {
             background-color: white;
             padding: 1.5rem;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .upload-form-container form {
             display: flex;
+            flex-direction: column;
             gap: 1rem;
         }
-        .search-bar input[type="text"] {
-            flex-grow: 1;
+        .upload-form-container input, .upload-form-container select {
             padding: 0.75rem;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-        .search-bar button {
+        .upload-form-container button {
             padding: 0.75rem 1.5rem;
             background-color: #007bff;
             color: white;
@@ -108,157 +111,246 @@
             border-radius: 4px;
             text-decoration: none;
         }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
 
     <header class="header">
-        <h1>Repositorio Universitario</h1>
+        <h1>Repositorio de Libros</h1>
         <nav class="nav">
-            <a href="#">Inicio</a>
-            <a href="#">Subir Recurso</a>
+            <a href="#" id="home-link">Inicio</a>
+            <a href="#" id="upload-link">Subir Libro</a>
             <a href="#">Mi Cuenta</a>
             <a href="#">Ayuda</a>
         </nav>
     </header>
 
-    <div class="container">
+    <div class="container" id="main-content">
         <div class="search-bar">
-            <input type="text" id="search-input" placeholder="Buscar recursos (ej. 'inteligencia artificial', 'tesis de grado')...">
+            <input type="text" id="search-input" placeholder="Buscar libros...">
             <button id="search-button">Buscar</button>
         </div>
 
         <div class="content">
             <aside class="sidebar">
                 <h3>Filtros</h3>
-                <p><strong>Tipo de Recurso</strong></p>
-                <ul id="filter-type"></ul>
+                <p><strong>Área</strong></p>
+                <ul id="filter-area"></ul>
                 <hr>
-                <p><strong>Disciplina</strong></p>
-                <ul id="filter-discipline"></ul>
+                <p><strong>Grado</strong></p>
+                <ul id="filter-grado"></ul>
+                <hr>
+                <p><strong>Editorial</strong></p>
+                <ul id="filter-editorial"></ul>
             </aside>
             <main class="results">
                 <h3>Resultados de Búsqueda</h3>
-                </main>
+            </main>
         </div>
     </div>
 
+    <div class="container hidden" id="upload-form-container">
+        <h2>Subir un Nuevo Libro</h2>
+        <form id="upload-form">
+            <label for="area">Área:</label>
+            <input type="text" id="area" required>
+
+            <label for="grado">Grado:</label>
+            <input type="number" id="grado" required min="1" max="11">
+
+            <label for="editorial">Editorial:</label>
+            <input type="text" id="editorial" required>
+
+            <label for="titulo">Título:</label>
+            <input type="text" id="titulo" required>
+
+            <label for="url_archivo">URL del Archivo (Google Drive):</label>
+            <input type="url" id="url_archivo" required>
+
+            <label for="clave_permiso">Clave de Permiso:</label>
+            <input type="password" id="clave_permiso" required>
+
+            <button type="submit">Subir Libro</button>
+        </form>
+    </div>
+
     <script>
-        const datosJSON = {
-          "recursos": [
-            {
-              "tipo_de_recurso": "Artículo de Investigación",
-              "disciplina": "Ingeniería de Sistemas",
-              "autor": "Dr. Juan Pérez",
-              "resumen": "Análisis y optimización de algoritmos de inteligencia artificial para la gestión de bases de datos no relacionales.",
-              "url_archivo": "https://drive.google.com/file/d/1op6KoovJtVPX3q67UHlZo2SnS9I4bOEU/view?usp=drive_link"
-            },
-            {
-              "tipo_de_recurso": "Tesis de Grado",
-              "disciplina": "Ciencias de la Computación",
-              "autor": "Ana Gómez",
-              "resumen": "Diseño e implementación de un sistema de recomendación basado en aprendizaje automático para plataformas de e-learning.",
-              "url_archivo": "https://drive.google.com/file/d/1op6KoovJtVPX3q67UHlZo2SnS9I4bOEU/view?usp=drive_link"
-            },
-            {
-              "tipo_de_recurso": "Presentación",
-              "disciplina": "Biología",
-              "autor": "Dra. Laura Torres",
-              "resumen": "Impacto del cambio climático en los ecosistemas marinos del Caribe. Presentación utilizada en el curso de Biología Marina.",
-              "url_archivo": "https://drive.google.com/file/d/1op6KoovJtVPX3q67UHlZo2SnS9I4bOEU/view?usp=drive_link"
-            },
-            {
-              "tipo_de_recurso": "Video Tutorial",
-              "disciplina": "Matemáticas",
-              "autor": "Prof. Carlos López",
-              "resumen": "Video explicativo sobre la resolución de ecuaciones diferenciales ordinarias. Incluye ejemplos prácticos y ejercicios.",
-              "url_archivo": "https://drive.google.com/file/d/1op6KoovJtVPX3q67UHlZo2SnS9I4bOEU/view?usp=drive_link"
-            },
-            {
-              "tipo_de_recurso": "Artículo de Investigación",
-              "disciplina": "Medicina",
-              "autor": "Dr. Luis García",
-              "resumen": "Estudio clínico sobre la eficacia de un nuevo fármaco para el tratamiento de la hipertensión. Incluye metodología, resultados y conclusiones.",
-              "url_archivo": "https://drive.google.com/file/d/1op6KoovJtVPX3q67UHlZo2SnS9I4bOEU/view?usp=drive_link"
-            },
-            {
-              "tipo_de_recurso": "Presentación",
-              "disciplina": "Ingeniería de Sistemas",
-              "autor": "Prof. Roberto Daza",
-              "resumen": "Conceptos de la robótica educativa para la enseñanza de la programación en escuelas.",
-              "url_archivo": "https://drive.google.com/file/d/1op6KoovJtVPX3q67UHlZo2SnS9I4bOEU/view?usp=drive_link"
-            }
+        const librosJSON = {
+          "libros": [
+            { "area": "Sociales", "grado": 6, "editorial": "Santillana", "titulo": "Sociales Grado 6 - Santillana", "url_archivo": "https://drive.google.com/file/d/1oQq0h5TYfFGs86oBhiIjSt1RmmiImcGl/view?usp=sharing" },
+            { "area": "Sociales", "grado": 7, "editorial": "Santillana", "titulo": "Sociales Grado 7 - Santillana", "url_archivo": "https://drive.google.com/file/d/1Cr1lwL2Hjq0gqvbJgg1NtB2-k3hMZYLH/view?usp=sharing" },
+            { "area": "Sociales", "grado": 8, "editorial": "Santillana", "titulo": "Sociales Grado 8 - Santillana", "url_archivo": "https://drive.google.com/file/d/1Q6pa-BAO7TfzoN-wqk519TCdkeTFPEx2/view?usp=sharing" },
+            { "area": "Sociales", "grado": 9, "editorial": "Santillana", "titulo": "Sociales Grado 9 - Santillana", "url_archivo": "https://drive.google.com/file/d/1Mx5lL5A1b5PTSG6CUvXlJruwnLXCmNRx/view?usp=sharing" },
+            { "area": "Sociales", "grado": 10, "editorial": "Santillana", "titulo": "Sociales Grado 10 - Santillana", "url_archivo": "https://drive.google.com/file/d/1G6jjSJXJlt9kdD3Mz889pH4c6qw7QEa2/view?usp=sharing" },
+            { "area": "Sociales", "grado": 11, "editorial": "Santillana", "titulo": "Sociales Grado 11 - Santillana", "url_archivo": "https://drive.google.com/file/d/1lFZZ9X27bH_vrxrbh8Ijiyk6qUeIv2_C/view?usp=sharing" },
+            { "area": "Naturales", "grado": 8, "editorial": "Santillana", "titulo": "Naturales Grado 8 - Santillana", "url_archivo": "https://drive.google.com/file/d/14juY76O1mx5XqYEp7WFogpD-ZBLn84IU/view?usp=sharing" },
+            { "area": "Naturales", "grado": 9, "editorial": "Santillana", "titulo": "Naturales Grado 9 - Santillana", "url_archivo": "https://drive.google.com/file/d/1l7LaficXEtdwXqejXOWNL2PN9eYR2nTp/view?usp=sharing" },
+            { "area": "Naturales", "grado": 3, "editorial": "Santillana", "titulo": "Naturales Grado 3 - Santillana", "url_archivo": "https://drive.google.com/file/d/1sTd5WKd7vkyhzDPz7ZA8k85saykTLvVK/view?usp=sharing" },
+            { "area": "Español", "grado": 1, "editorial": "Vamos a Aprender", "titulo": "Español Grado 1 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/1ZaikaNudye5Mm698x0gSZ7Pf8ujbQtro/view?usp=sharing" },
+            { "area": "Español", "grado": 2, "editorial": "Vamos a Aprender", "titulo": "Español Grado 2 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/13w9BOsupUEfktl_XjsDyLvIUcy6btoIV/view?usp=sharing" },
+            { "area": "Español", "grado": 3, "editorial": "Vamos a Aprender", "titulo": "Español Grado 3 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/1p1uF8EmSGQc0iwlcTCdQyng53QXZ2Wjm/view?usp=sharing" },
+            { "area": "Español", "grado": 4, "editorial": "Vamos a Aprender", "titulo": "Español Grado 4 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/10Q1sj9jBXTWqLudsOWPbHoXQkFON42mq/view?usp=sharing" },
+            { "area": "Español", "grado": 5, "editorial": "Vamos a Aprender", "titulo": "Español Grado 5 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/1dxEwPD-KLM80olLeh6r3YuGREcOPi3yq/view?usp=sharing" },
+            { "area": "Español", "grado": 6, "editorial": "Vamos a Aprender", "titulo": "Español Grado 6 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/1YEQQLkCWR05RwOlLv6_Un-gE-a2qWzlI/view?usp=sharing" },
+            { "area": "Español", "grado": 7, "editorial": "Vamos a Aprender", "titulo": "Español Grado 7 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/1UVGgPnyV_7ptbjE1oPL8sd4waWGlk4Cl/view?usp=sharing" },
+            { "area": "Español", "grado": 8, "editorial": "Vamos a Aprender", "titulo": "Español Grado 8 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/1HhlgYDCONXnihq04OUH0plaQfp9HiT-4/view?usp=sharing" },
+            { "area": "Español", "grado": 9, "editorial": "Vamos a Aprender", "titulo": "Español Grado 9 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/1vuc_qP68Wl-dNAwN_38V_hu_It1oN6no/view?usp=sharing" },
+            { "area": "Español", "grado": 10, "editorial": "Vamos a Aprender", "titulo": "Español Grado 10 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/1_dU6R6PqTFMpOaSr0i9LjYAvkyV2ik5Z/view?usp=sharing" },
+            { "area": "Español", "grado": 11, "editorial": "Vamos a Aprender", "titulo": "Español Grado 11 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/12aAkzd6Vs7wsGeoXACWjO6U5HZP9kAw8/view?usp=sharing" },
+            { "area": "Física", "grado": 10, "editorial": "Santillana", "titulo": "Física Grado 10 - Santillana", "url_archivo": "https://drive.google.com/file/d/1XyU-8_zNNPD0x2SBFd-aSjOIxmCJPpRW/view?usp=sharing" },
+            { "area": "Física", "grado": 11, "editorial": "Santillana", "titulo": "Física Grado 11 - Santillana", "url_archivo": "https://drive.google.com/file/d/1A0stq9UP_jAxV8jDPvkjaNq71siX0lfW/view?usp=sharing" },
+            { "area": "Matemáticas", "grado": 1, "editorial": "Vamos a Aprender", "titulo": "Matemáticas Grado 1 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/16_XQdS-IAl-xcCZZ1l-7tQP3yIcRMQej/view?usp=sharing" },
+            { "area": "Matemáticas", "grado": 2, "editorial": "Vamos a Aprender", "titulo": "Matemáticas Grado 2 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/12A_X9yeKGecVxNhAtSnJsZcR-DJEqTCY/view?usp=sharing" },
+            { "area": "Matemáticas", "grado": 3, "editorial": "Vamos a Aprender", "titulo": "Matemáticas Grado 3 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/1h-JoRezRCqbbjk5y9grzAwefaWfmpavs/view?usp=sharing" },
+            { "area": "Matemáticas", "grado": 4, "editorial": "Vamos a Aprender", "titulo": "Matemáticas Grado 4 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/1_hJwz2oNQM-tRpwo43V6wvPdrPoCte9K/view?usp=sharing" },
+            { "area": "Matemáticas", "grado": 5, "editorial": "Vamos a Aprender", "titulo": "Matemáticas Grado 5 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/1zeCA2Z2hTIJt1vfNKjRzvKDCr5CyqdR7/view?usp=sharing" },
+            { "area": "Matemáticas", "grado": 6, "editorial": "Vamos a Aprender", "titulo": "Matemáticas Grado 6 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/12TkEuZNvX8xoK6cWfEZlRaObRH2OJtsI/view?usp=sharing" },
+            { "area": "Matemáticas", "grado": 7, "editorial": "Vamos a Aprender", "titulo": "Matemáticas Grado 7 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/1DTl9VUfGdgxe5URqj8eLBtx3d-o4E63j/view?usp=sharing" },
+            { "area": "Matemáticas", "grado": 8, "editorial": "Vamos a Aprender", "titulo": "Matemáticas Grado 8 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/1RgOt7PgzW-m5NwcW7rpyxAFd2XrFL1SI/view?usp=sharing" },
+            { "area": "Matemáticas", "grado": 9, "editorial": "Vamos a Aprender", "titulo": "Matemáticas Grado 9 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/1D9dg_01P6dvOTfuIK8y1IyoF1cK9mz_A/view?usp=sharing" },
+            { "area": "Matemáticas", "grado": 10, "editorial": "Vamos a Aprender", "titulo": "Matemáticas Grado 10 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/1uGJjYJ_pL0m09F-QUVqLUCNLgrrYtpvk/view?usp=sharing" },
+            { "area": "Matemáticas", "grado": 11, "editorial": "Vamos a Aprender", "titulo": "Matemáticas Grado 11 - Vamos a Aprender", "url_archivo": "https://drive.google.com/file/d/17ckTKR8etYzlRWSYELjmIJAOBkmVGB3Z/view?usp=sharing" },
+            { "area": "Matemáticas", "grado": 6, "editorial": "Santillana", "titulo": "Matemáticas Grado 6 - Santillana", "url_archivo": "https://drive.google.com/file/d/1iZTSv3vr-uE5wnr1jiz_WI2bwd-SSlpH/view?usp=sharing" },
+            { "area": "Matemáticas", "grado": 7, "editorial": "Santillana", "titulo": "Matemáticas Grado 7 - Santillana", "url_archivo": "https://drive.google.com/file/d/19YZnhQiK7tfyiGl75xQWOtctrXiJNBXF/view?usp=sharing" },
+            { "area": "Matemáticas", "grado": 8, "editorial": "Santillana", "titulo": "Matemáticas Grado 8 - Santillana", "url_archivo": "https://drive.google.com/file/d/1asvXvLMZBX_gF9GzVKJyqnwgIcWsXYJc/view?usp=sharing" },
+            { "area": "Matemáticas", "grado": 9, "editorial": "Santillana", "titulo": "Matemáticas Grado 9 - Santillana", "url_archivo": "https://drive.google.com/file/d/1v4osOZu3Kx_2HivS7SrQFJKyXd86awwt/view?usp=sharing" },
+            { "area": "Matemáticas", "grado": 10, "editorial": "Santillana", "titulo": "Matemáticas Grado 10 - Santillana", "url_archivo": "https://drive.google.com/file/d/15u0RnauEaK8ykYX5R7KvyVWiSdEIj4Su/view?usp=sharing" },
+            { "area": "Matemáticas", "grado": 11, "editorial": "Santillana", "titulo": "Matemáticas Grado 11 - Santillana", "url_archivo": "https://drive.google.com/file/d/1V3N0YfmHVFClxuIJ9O7V3Hoxy9RHvLEL/view?usp=sharing" }
           ]
         };
 
-        const todosLosRecursos = datosJSON.recursos;
+        const TODOS_LOS_LIBROS = librosJSON.libros;
+        const CLAVE_DE_ACCESO = 'mi_clave_secreta';
+        
+        const mainContentDiv = document.getElementById('main-content');
+        const uploadFormContainerDiv = document.getElementById('upload-form-container');
+        const homeLink = document.getElementById('home-link');
+        const uploadLink = document.getElementById('upload-link');
+        const uploadForm = document.getElementById('upload-form');
         const resultadosDiv = document.querySelector('.results');
-        const filtroTipoUL = document.getElementById('filter-type');
-        const filtroDisciplinaUL = document.getElementById('filter-discipline');
+        const filtroAreaUL = document.getElementById('filter-area');
+        const filtroGradoUL = document.getElementById('filter-grado');
+        const filtroEditorialUL = document.getElementById('filter-editorial');
         const searchInput = document.getElementById('search-input');
         const searchButton = document.getElementById('search-button');
 
-        // Función para renderizar los recursos en el HTML
-        function renderizarRecursos(recursos) {
-            resultadosDiv.innerHTML = '<h3>Resultados de Búsqueda</h3>'; // Limpiar resultados
-            if (recursos.length === 0) {
-                resultadosDiv.innerHTML += '<p>No se encontraron recursos que coincidan con la búsqueda.</p>';
+        // Mostrar u ocultar secciones
+        function mostrarSeccion(seccion) {
+            if (seccion === 'home') {
+                mainContentDiv.classList.remove('hidden');
+                uploadFormContainerDiv.classList.add('hidden');
+            } else if (seccion === 'upload') {
+                mainContentDiv.classList.add('hidden');
+                uploadFormContainerDiv.classList.remove('hidden');
+            }
+        }
+
+        // Lógica para renderizar los libros en el HTML
+        function renderizarLibros(libros) {
+            resultadosDiv.innerHTML = '<h3>Resultados de Búsqueda</h3>';
+            if (libros.length === 0) {
+                resultadosDiv.innerHTML += '<p>No se encontraron libros que coincidan con la búsqueda.</p>';
                 return;
             }
-            recursos.forEach(recurso => {
+            libros.forEach(libro => {
                 const card = document.createElement('div');
                 card.className = 'resource-card';
                 card.innerHTML = `
-                    <h4>${recurso.resumen}</h4>
-                    <p><strong>Autor:</strong> ${recurso.autor}</p>
-                    <p><strong>Tipo:</strong> ${recurso.tipo_de_recurso}</p>
-                    <p><strong>Disciplina:</strong> ${recurso.disciplina}</p>
-                    <a href="${recurso.url_archivo}" class="download-btn" target="_blank">Descargar</a>
+                    <h4>${libro.titulo}</h4>
+                    <p><strong>Área:</strong> ${libro.area}</p>
+                    <p><strong>Grado:</strong> ${libro.grado}</p>
+                    <p><strong>Editorial:</strong> ${libro.editorial}</p>
+                    <a href="${libro.url_archivo}" class="download-btn" target="_blank">Descargar</a>
                 `;
                 resultadosDiv.appendChild(card);
             });
         }
 
-        // Función para generar los filtros dinámicamente
-        function generarFiltros(recursos) {
-            // Generar filtros por Tipo de Recurso
-            const tiposUnicos = [...new Set(recursos.map(item => item.tipo_de_recurso))];
-            tiposUnicos.forEach(tipo => {
+        // Lógica para generar los filtros dinámicamente
+        function generarFiltros(libros) {
+            filtroAreaUL.innerHTML = '';
+            filtroGradoUL.innerHTML = '';
+            filtroEditorialUL.innerHTML = '';
+            
+            const areasUnicas = [...new Set(libros.map(item => item.area))];
+            areasUnicas.forEach(area => {
                 const li = document.createElement('li');
-                li.textContent = tipo;
+                li.textContent = area;
                 li.addEventListener('click', () => {
-                    const recursosFiltrados = todosLosRecursos.filter(recurso => recurso.tipo_de_recurso === tipo);
-                    renderizarRecursos(recursosFiltrados);
+                    const librosFiltrados = TODOS_LOS_LIBROS.filter(libro => libro.area === area);
+                    renderizarLibros(librosFiltrados);
                 });
-                filtroTipoUL.appendChild(li);
+                filtroAreaUL.appendChild(li);
             });
 
-            // Generar filtros por Disciplina
-            const disciplinasUnicas = [...new Set(recursos.map(item => item.disciplina))];
-            disciplinasUnicas.forEach(disciplina => {
+            const gradosUnicos = [...new Set(libros.map(item => item.grado))].sort((a, b) => a - b);
+            gradosUnicos.forEach(grado => {
                 const li = document.createElement('li');
-                li.textContent = disciplina;
+                li.textContent = grado;
                 li.addEventListener('click', () => {
-                    const recursosFiltrados = todosLosRecursos.filter(recurso => recurso.disciplina === disciplina);
-                    renderizarRecursos(recursosFiltrados);
+                    const librosFiltrados = TODOS_LOS_LIBROS.filter(libro => libro.grado === grado);
+                    renderizarLibros(librosFiltrados);
                 });
-                filtroDisciplinaUL.appendChild(li);
+                filtroGradoUL.appendChild(li);
+            });
+
+            const editorialesUnicas = [...new Set(libros.map(item => item.editorial))];
+            editorialesUnicas.forEach(editorial => {
+                const li = document.createElement('li');
+                li.textContent = editorial;
+                li.addEventListener('click', () => {
+                    const librosFiltrados = TODOS_LOS_LIBROS.filter(libro => libro.editorial === editorial);
+                    renderizarLibros(librosFiltrados);
+                });
+                filtroEditorialUL.appendChild(li);
             });
         }
 
-        // Función para manejar la búsqueda por texto
+        // Lógica para manejar la búsqueda por texto
         function manejarBusqueda() {
             const searchTerm = searchInput.value.toLowerCase();
-            const recursosFiltrados = todosLosRecursos.filter(recurso => {
-                return recurso.resumen.toLowerCase().includes(searchTerm) ||
-                       recurso.autor.toLowerCase().includes(searchTerm) ||
-                       recurso.tipo_de_recurso.toLowerCase().includes(searchTerm) ||
-                       recurso.disciplina.toLowerCase().includes(searchTerm);
+            const librosFiltrados = TODOS_LOS_LIBROS.filter(libro => {
+                return libro.titulo.toLowerCase().includes(searchTerm) ||
+                       libro.area.toLowerCase().includes(searchTerm) ||
+                       libro.editorial.toLowerCase().includes(searchTerm) ||
+                       libro.grado.toString().includes(searchTerm);
             });
-            renderizarRecursos(recursosFiltrados);
+            renderizarLibros(librosFiltrados);
         }
 
-        // Event listeners para la búsqueda
+        // Manejar el envío del formulario
+        uploadForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const claveIngresada = document.getElementById('clave_permiso').value;
+            if (claveIngresada !== CLAVE_DE_ACCESO) {
+                alert('Clave de permiso incorrecta. No se puede subir el libro.');
+                return;
+            }
+
+            const nuevoLibro = {
+                area: document.getElementById('area').value,
+                grado: parseInt(document.getElementById('grado').value),
+                editorial: document.getElementById('editorial').value,
+                titulo: document.getElementById('titulo').value,
+                url_archivo: document.getElementById('url_archivo').value
+            };
+
+            TODOS_LOS_LIBROS.push(nuevoLibro);
+
+            alert('¡Libro subido con éxito!');
+            uploadForm.reset();
+            mostrarSeccion('home');
+            renderizarLibros(TODOS_LOS_LIBROS);
+            generarFiltros(TODOS_LOS_LIBROS);
+        });
+
+        // Event listeners para la navegación y búsqueda
+        homeLink.addEventListener('click', () => mostrarSeccion('home'));
+        uploadLink.addEventListener('click', () => mostrarSeccion('upload'));
         searchButton.addEventListener('click', manejarBusqueda);
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -268,8 +360,9 @@
 
         // Cargar y renderizar todo al inicio
         document.addEventListener('DOMContentLoaded', () => {
-            generarFiltros(todosLosRecursos);
-            renderizarRecursos(todosLosRecursos);
+            generarFiltros(TODOS_LOS_LIBROS);
+            renderizarLibros(TODOS_LOS_LIBROS);
+            mostrarSeccion('home');
         });
 
     </script>
